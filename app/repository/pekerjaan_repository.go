@@ -193,8 +193,7 @@ func CountPekerjaan(search string) (int, error) {
 }
 
 // SoftDelete
-func SoftDeletePekerjaan(id string, isAdmin bool, alumniID int) error {
-	// Konversi id string ke integer
+func SoftDeletePekerjaan(id string, isAdmin bool, userID int) error {
 	intID, err := strconv.Atoi(id)
 	if err != nil {
 		return fmt.Errorf("ID tidak valid: %v", err)
@@ -204,10 +203,12 @@ func SoftDeletePekerjaan(id string, isAdmin bool, alumniID int) error {
 		UPDATE pekerjaan_alumni 
 		SET deleted_at = NOW()
 		WHERE id = $1 AND deleted_at IS NULL
-		AND (alumni_id = $2 OR $3 = TRUE)
+		AND (alumni_id = (
+			SELECT id FROM alumni WHERE user_id = $2
+		) OR $3 = TRUE)
 	`
 
-	res, err := database.DB.Exec(query, intID, alumniID, isAdmin)
+	res, err := database.DB.Exec(query, intID, userID, isAdmin)
 	if err != nil {
 		return err
 	}

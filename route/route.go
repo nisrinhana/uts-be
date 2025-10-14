@@ -30,13 +30,13 @@ alumni.Delete("/:id", middleware.AdminOnly(), service.DeleteAlumni)
 // Pekerjaan routes
 pekerjaan := protected.Group("/pekerjaan")
 
-// Soft delete, restore, dan trash
+// Soft delete, restore, dan trash 
 pekerjaan.Delete("/softdelete/:id", service.SoftDeletePekerjaan)
-pekerjaan.Get("/trash", service.GetTrashedPekerjaan)
-pekerjaan.Put("/restore/:id", service.RestorePekerjaan)
 pekerjaan.Delete("/harddelete/:id", middleware.AdminOnly(), service.HardDeletePekerjaan)
+pekerjaan.Put("/restore/:id", service.RestorePekerjaan)
+pekerjaan.Get("/trash", service.GetTrashedPekerjaan)
 
-// CRUD utama
+// utama
 pekerjaan.Get("/", service.GetPekerjaanWithPagination)
 pekerjaan.Get("/:id", service.GetPekerjaanByID)
 pekerjaan.Get("/alumni/:alumni_id", middleware.AdminOnly(), service.GetPekerjaanByAlumniID)
