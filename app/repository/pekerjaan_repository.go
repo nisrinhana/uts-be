@@ -34,7 +34,7 @@ func GetAllPekerjaan(isAdmin bool) ([]model.PekerjaanAlumni, error) {
 			&p.ID, &p.AlumniID, &p.NamaPerusahaan, &p.PosisiJabatan,
 			&p.BidangIndustri, &p.LokasiKerja, &p.GajiRange,
 			&p.TanggalMulai, &p.TanggalSelesai, &p.StatusPekerjaan,
-			&p.Deskripsi, &p.CreatedAt, &p.UpdatedAt, &p.DeletedAt,
+			&p.Deskripsi, &p.CreatedAt, &p.UpdatedAt, 
 		)
 		if err != nil {
 			return nil, err
@@ -80,7 +80,7 @@ func GetPekerjaanByID(id string) (model.PekerjaanAlumni, error) {
 		&p.ID, &p.AlumniID, &p.NamaPerusahaan, &p.PosisiJabatan,
 		&p.BidangIndustri, &p.LokasiKerja, &p.GajiRange,
 		&p.TanggalMulai, &p.TanggalSelesai, &p.StatusPekerjaan,
-		&p.Deskripsi, &p.CreatedAt, &p.UpdatedAt, &p.DeletedAt,
+		&p.Deskripsi, &p.CreatedAt, &p.UpdatedAt,
 	)
 
 	if err != nil {
@@ -115,7 +115,7 @@ func GetPekerjaanByAlumniID(alumniID string, isAdmin bool) ([]model.PekerjaanAlu
 			&p.ID, &p.AlumniID, &p.NamaPerusahaan, &p.PosisiJabatan,
 			&p.BidangIndustri, &p.LokasiKerja, &p.GajiRange,
 			&p.TanggalMulai, &p.TanggalSelesai, &p.StatusPekerjaan,
-			&p.Deskripsi, &p.CreatedAt, &p.UpdatedAt, &p.DeletedAt,
+			&p.Deskripsi, &p.CreatedAt, &p.UpdatedAt, 
 		)
 		if err != nil {
 			return nil, err
@@ -222,38 +222,38 @@ func SoftDeletePekerjaan(id string, isAdmin bool, userID int) error {
 }
 
 //trash
-func GetTrashedPekerjaan() ([]model.PekerjaanAlumni, error) {
+func GetTrashedPekerjaan() ([]model.TrashPekerjaan, error) {
 	query := `
 		SELECT id, alumni_id, nama_perusahaan, posisi_jabatan, bidang_industri,
 		       lokasi_kerja, gaji_range, tanggal_mulai_kerja, tanggal_selesai_kerja,
-		       status_pekerjaan, deskripsi_pekerjaan, created_at, updated_at, deleted_at
+		       status_pekerjaan, deskripsi_pekerjaan, deleted_at
 		FROM pekerjaan_alumni
 		WHERE deleted_at IS NOT NULL
 		ORDER BY deleted_at DESC
 	`
-
 	rows, err := database.DB.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var list []model.PekerjaanAlumni
+	var list []model.TrashPekerjaan
 	for rows.Next() {
-		var p model.PekerjaanAlumni
+		var t model.TrashPekerjaan
 		err := rows.Scan(
-			&p.ID, &p.AlumniID, &p.NamaPerusahaan, &p.PosisiJabatan,
-			&p.BidangIndustri, &p.LokasiKerja, &p.GajiRange,
-			&p.TanggalMulai, &p.TanggalSelesai, &p.StatusPekerjaan,
-			&p.Deskripsi, &p.CreatedAt, &p.UpdatedAt, &p.DeletedAt,
+			&t.ID, &t.AlumniID, &t.NamaPerusahaan, &t.PosisiJabatan,
+			&t.BidangIndustri, &t.LokasiKerja, &t.GajiRange,
+			&t.TanggalMulai, &t.TanggalSelesai, &t.StatusPekerjaan,
+			&t.Deskripsi, &t.DeletedAt,
 		)
 		if err != nil {
 			return nil, err
 		}
-		list = append(list, p)
+		list = append(list, t)
 	}
 	return list, nil
 }
+
 
 // Restore data dari Trash
 func RestorePekerjaan(id string) error {

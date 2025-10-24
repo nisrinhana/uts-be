@@ -164,12 +164,15 @@ func SoftDeletePekerjaan(c *fiber.Ctx) error {
 func GetTrashedPekerjaan(c *fiber.Ctx) error {
 	data, err := repository.GetTrashedPekerjaan()
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{
+			"success": false,
+			"error":   err.Error(),
+		})
 	}
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"message": "Data pekerjaan yang ada di trash",
+		"message": "Data pekerjaan yang berada di trash",
 		"data":    data,
 	})
 }
