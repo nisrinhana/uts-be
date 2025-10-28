@@ -1,25 +1,24 @@
 package mongo
 
 import (
-    "context"
-    "tugas4go/app/model/mongo"
-    "tugas4go/database"
-    "time"
+	"context"
+	modelMongo "tugas4go/app/model/mongo"
+	"tugas4go/database"
+	"time"
 
-    "go.mongodb.org/mongo-driver/bson"
-    "go.mongodb.org/mongo-driver/bson/primitive"
-    "go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var pekerjaanCol *mongo.Collection
 
 func InitPekerjaanCollection() {
-    pekerjaanCol = database.MongoDB.Collection("pekerjaan_alumni")
+	pekerjaanCol = database.MongoDB.Collection("pekerjaan_alumni")
 }
 
-
 // CREATE
-func CreatePekerjaanMongo(p model.PekerjaanAlumniMongo) error {
+func CreatePekerjaanMongo(p modelMongo.PekerjaanAlumniMongo) error {
 	p.CreatedAt = time.Now()
 	p.UpdatedAt = time.Now()
 	_, err := pekerjaanCol.InsertOne(context.TODO(), p)
@@ -27,8 +26,8 @@ func CreatePekerjaanMongo(p model.PekerjaanAlumniMongo) error {
 }
 
 // GET ALL
-func GetAllPekerjaanMongo() ([]model.PekerjaanAlumniMongo, error) {
-	var results []model.PekerjaanAlumniMongo
+func GetAllPekerjaanMongo() ([]modelMongo.PekerjaanAlumniMongo, error) {
+	var results []modelMongo.PekerjaanAlumniMongo
 	cur, err := pekerjaanCol.Find(context.TODO(), bson.M{})
 	if err != nil {
 		return nil, err
@@ -36,7 +35,7 @@ func GetAllPekerjaanMongo() ([]model.PekerjaanAlumniMongo, error) {
 	defer cur.Close(context.TODO())
 
 	for cur.Next(context.TODO()) {
-		var p model.PekerjaanAlumniMongo
+		var p modelMongo.PekerjaanAlumniMongo
 		cur.Decode(&p)
 		results = append(results, p)
 	}
@@ -44,16 +43,16 @@ func GetAllPekerjaanMongo() ([]model.PekerjaanAlumniMongo, error) {
 }
 
 // GET BY ID
-func GetPekerjaanByIDMongo(id string) (model.PekerjaanAlumniMongo, error) {
-	var p model.PekerjaanAlumniMongo
+func GetPekerjaanByIDMongo(id string) (modelMongo.PekerjaanAlumniMongo, error) {
+	var p modelMongo.PekerjaanAlumniMongo
 	objID, _ := primitive.ObjectIDFromHex(id)
 	err := pekerjaanCol.FindOne(context.TODO(), bson.M{"_id": objID}).Decode(&p)
 	return p, err
 }
 
 // GET BY ALUMNI_ID
-func GetPekerjaanByAlumniIDMongo(alumniID int) ([]model.PekerjaanAlumniMongo, error) {
-	var results []model.PekerjaanAlumniMongo
+func GetPekerjaanByAlumniIDMongo(alumniID int) ([]modelMongo.PekerjaanAlumniMongo, error) {
+	var results []modelMongo.PekerjaanAlumniMongo
 	cur, err := pekerjaanCol.Find(context.TODO(), bson.M{"alumni_id": alumniID})
 	if err != nil {
 		return nil, err
@@ -61,7 +60,7 @@ func GetPekerjaanByAlumniIDMongo(alumniID int) ([]model.PekerjaanAlumniMongo, er
 	defer cur.Close(context.TODO())
 
 	for cur.Next(context.TODO()) {
-		var p model.PekerjaanAlumniMongo
+		var p modelMongo.PekerjaanAlumniMongo
 		cur.Decode(&p)
 		results = append(results, p)
 	}
@@ -69,7 +68,7 @@ func GetPekerjaanByAlumniIDMongo(alumniID int) ([]model.PekerjaanAlumniMongo, er
 }
 
 // UPDATE
-func UpdatePekerjaanMongo(id string, update model.PekerjaanAlumniMongo) error {
+func UpdatePekerjaanMongo(id string, update modelMongo.PekerjaanAlumniMongo) error {
 	objID, _ := primitive.ObjectIDFromHex(id)
 	update.UpdatedAt = time.Now()
 

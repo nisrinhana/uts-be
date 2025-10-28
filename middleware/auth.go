@@ -3,12 +3,10 @@ package middleware
 import (
 	"strings"
 	"tugas4go/utils"
-
-
 	"github.com/gofiber/fiber/v2"
 )
 
-// Middleware untuk memerlukan login
+// AuthRequired memeriksa JWT di header
 func AuthRequired() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		authHeader := c.Get("Authorization")
@@ -26,23 +24,20 @@ func AuthRequired() fiber.Handler {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Token tidak valid atau expired", "detail": err.Error()})
 		}
 
-		// set user info ke context
 		c.Locals("user_id", claims.UserID)
 		c.Locals("username", claims.Username)
 		c.Locals("role", claims.Role)
-		c.Locals("user", claims)
 
 		return c.Next()
 	}
 }
 
-// AdminOnly memastikan role
+// AdminOnly memastikan role user adalah admin
 func AdminOnly() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		r := c.Locals("role")
-		role, ok := r.(string)
-		if !ok || role != "admin" {
-			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "Akses ditolak. Hanya admin yang diizinkan"})
+		role := c.Locals("role")
+		if roleStr, ok := role.(string); !ok || roleStr != "admin" {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "Akses ditolak. Hanya admin"})
 		}
 		return c.Next()
 	}

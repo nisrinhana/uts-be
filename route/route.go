@@ -3,7 +3,7 @@ package route
 import (
 	"tugas4go/middleware"
 	"tugas4go/app/service"
-	mongoservice "tugas4go/app/service/mongo" 
+	mongoservice "tugas4go/app/service/mongo"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,7 +13,8 @@ func SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
 
 	// LOGIN (PUBLIC)
-	api.Post("/login", service.Login)
+	api.Post("/login", service.Login)                  // Login Postgres
+	api.Post("/mongo/login", mongoservice.LoginUser)   // Login Mongo ( tanpa token)
 
 	// PROTECTED
 	protected := api.Group("", middleware.AuthRequired())
@@ -45,5 +46,11 @@ func SetupRoutes(app *fiber.App) {
 	mongo.Put("/:id", middleware.AdminOnly(), mongoservice.UpdatePekerjaanMongo)
 	mongo.Delete("/:id", middleware.AdminOnly(), mongoservice.DeletePekerjaanMongo)
 
-    
+	// FILE ROUTES (MongoDB)
+	files := protected.Group("/mongo/files")
+	files.Post("/upload/foto", mongoservice.UploadFoto)
+	files.Post("/upload/sertifikat", mongoservice.UploadSertifikat)
+	files.Get("/", mongoservice.GetAllFilesMongo)
+	files.Get("/:id", mongoservice.GetFileByIDMongo)
+	files.Delete("/:id", middleware.AdminOnly(), mongoservice.DeleteFileByIDMongo)
 }

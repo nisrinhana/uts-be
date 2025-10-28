@@ -38,7 +38,7 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// buat token
-	token, err := utils.GenerateToken(user)
+	token, err := utils.GenerateTokenPostgres(user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Gagal generate token"})
 	}
